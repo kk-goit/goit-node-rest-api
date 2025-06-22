@@ -1,52 +1,27 @@
-import fs from "fs/promises";
-import path from "path";
+import Contact from "../db/contacts,js";
 import { randomUUID } from "crypto";
 
-const contactsPath = path.resolve("db", "contacts.json");
+const listContacts = async () => Contact.findAll();
 
-async function listContacts() {
-  const data = await fs.readFile(contactsPath, "utf8");
-  return JSON.parse(data);
+const getContactById = async (contactId) => Contact.findByPk(contactId);
+
+async function removeContact(contactId) { 
+  const contact = await getContactById(contactId);
+  if (!contact) return null;
+
+  Contact.destroy({ where: { id: contactId } });
+  return contact;
 }
 
-async function getContactById(contactId) {
-  const contacts = await listContacts();
-  return contacts.find((c) => c.id === contactId) || null;
-}
-
-async function getContactsIdxById(contactId) {
-  const contacts = await listContacts();
-  const idx = contacts.findIndex((c) => c.id === contactId);
-  return [contacts, idx];
-}
-
-async function removeContact(contactId) {
-  const [contacts, idx] = await getContactsIdxById(contactId);
-  if (idx === -1) return null;
-
-  const [removed] = contacts.splice(idx, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return removed;
-}
-
-async function addContact(name, email, phone) {
-  const contacts = await listContacts();
-  const newContact = {
-    id: randomUUID().replaceAll("-", "").substring(0, 21),
-    name, email, phone
-  };
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return newContact;
-}
+const addContact = async (data) => Contact.create({
+  id: randomUUID().replaceAll("-", "").substring(0, 21), ...data
+});
 
 async function updateContactById(contactId, newData) {
-  const [contacts, idx] = await getContactsIdxById(contactId);
-  if (idx === -1) return null;
+  const contact = await getContactById(contactId);
+  if (!contact) return null;
 
-  contacts[idx] = { ...contacts[idx], ...newData };
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return contacts[idx];
+  return contact.update(newData, { returning: true });
 }
 
 export { listContacts, getContactById, removeContact, addContact, updateContactById };

@@ -21,6 +21,8 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-app.listen(3000, () => {
-  console.log("Server is running. Use our API on port: 3000");
+const { PORT = 3000 } = process.env;
+const port = Number(PORT);
+app.listen(port, () => {
+  console.log(`Server is running. Use our API on port: ${port}`);
 });

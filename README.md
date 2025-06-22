@@ -1,42 +1,33 @@
 # goit-node-rest-api
 Домашні завдання курсу Fullstack. Back End Development: Node.js. 
 
-# Домашнє завдання. Тема 4. REST API
+# Тема 6. PostgresSQL та Sequelize. Домашня робота
 
-## GET /api/contacts 
+## Підключеня до БД та створеня таблиці 
+```sql
+CREATE TABLE public.contacts (
+	"id" varchar NOT NULL,
+	"name" varchar NOT NULL,
+	email varchar NOT NULL,
+	phone varchar NOT NULL,
+	favorite boolean DEFAULT false,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, 
+  "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+	CONSTRAINT contacts_pk PRIMARY KEY (id)
+);
+```
+### наповнення таблиці первинними значеннями
+```sql
+INSERT INTO public.contacts VALUES
+ ('AeHIrLTr6JkxGE6SN-0Rw', 'Allen Raymond', 'nulla.ante@vestibul.co.uk', '(992) 914-3792', false, now(), now()),
+ ('qdggE76Jtbfd9eWJHrssH', 'Chaim Lewis', 'dui.in@egetlacus.ca', '(294) 840-6685', false, now(), now()),
+ ('drsAJ4SHPYqZeG-83QTVW', 'Kennedy Lane', 'mattis.Cras@nonenimMauris.net', '(542) 451-7038', false, now(), now());
+```
 
-![listContacts](imgs/01.jpg)
+![Table contacts in DB](imgs/01.jpg)
 
-## GET /api/contacts/ 
+## Створення маршруту PATCH /api/contacts/favorite
+![Add to favorits](imgs/02a.jpg)
+![id not found](imgs/02b.jpg)
 
-### Повернення об'єкта контакту за id в json-форматі зі статусом 200 .
-![getContactById](imgs/02-01.jpg)
-### Повернення json з повідомленням {"message": "Not found"} зі статусом 404, якщо контакт за id не знайдено .
-![id not found](imgs/02-02.jpg)
 
-## POST /api/contacts
-
-### Повернення json з повідомленням {"message": error.message} зі статусом 400, якщо відсутні обов'язкові поля або передані поля мають не валідне значення .
-![No Name field](imgs/03-01a.jpg)
-![Empty body](imgs/03-01b.jpg)
-![Bad phone number](imgs/03-01c.jpg)
-### Повернення новоствореного об'єкта з полями {id, name, email, phone} і статусом 201.
-![addContact](imgs/03-02.jpg)
-
-## DELETE /api/contacts/
-
-### Повернення об'єкта видаленого контакту в json-форматі зі статусом 200 .
-![removeContact](imgs/04-01.jpg)
-### Повернення json з повідомленням {"message": "Not found"} зі статусом 404, якщо контакт за id не знайдено .
-![id not found](imgs/04-02.jpg)
-
-## PUT /api/contacts/ — 25 балів
-
-### Повернення json з повідомленням {"message": "Body must have at least one field"} зі статусом 400, якщо запит на оновлення здійснено без передачі в body хоча б одного поля .
-![Empty body](imgs/05-01.jpg)
-### Повернення json з повідомленням {"message": error.message} зі статусом 400, якщо передані поля мають не валідне значення .
-![Bad phone number](imgs/05-02.jpg)
-### Повернення оновленого об'єкта контакту зі статусом 200 .
-![updateContactById](imgs/05-03.jpg)
-### Повернення json з повідомленням {"message": "Not found"} зі статусом 404, якщо контакт за id не знайдено .
-![id not found](imgs/05-04.jpg)
