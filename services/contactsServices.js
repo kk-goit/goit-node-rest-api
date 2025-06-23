@@ -1,5 +1,4 @@
-import Contact from "../db/contacts,js";
-import { randomUUID } from "crypto";
+import Contact from "../db/contacts.js";
 
 const listContacts = async () => Contact.findAll();
 
@@ -13,9 +12,7 @@ async function removeContact(contactId) {
   return contact;
 }
 
-const addContact = async (data) => Contact.create({
-  id: randomUUID().replaceAll("-", "").substring(0, 21), ...data
-});
+const addContact = async (data) => Contact.create(data);
 
 async function updateContactById(contactId, newData) {
   const contact = await getContactById(contactId);

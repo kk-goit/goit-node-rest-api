@@ -41,3 +41,11 @@ export const updateStatusContactSchema = Joi.object({
       "any.required": "Favorite is required",
     }),
 });
+
+export const contactIdParamSchema = Joi.object({
+  id: Joi.number().integer().min(1).required().messages({
+    "number.base": "Contact id must be a number",
+    "number.min": "Contact id must be a positive number",
+    "any.required": "Contact id is required",
+  }),
+});
