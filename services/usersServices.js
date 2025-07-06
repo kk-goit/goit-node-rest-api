@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../db/models/users.js";
+import getGravatarUrl from "../helpers/gravatarURL.js";
 
 const { JWT_SECRET, JWT_EXPIRES } = process.env;
 
@@ -15,7 +16,11 @@ export const getUserByEmail = async (email) => {
 export const createUser = async (body) => {
   const { email, password } = body;
   const hashpass = await bcrypt.hash(password, 10);
-  return User.create({ ...body, password: hashpass });
+
+  let { avatarURL } = body
+  if (!avatarURL) avatarURL = await getGravatarUrl(email);
+  
+  return User.create({ ...body, password: hashpass, avatarURL });
 };
 
 export const validatePassword = async (pass, hashpass) => { 
@@ -41,4 +46,8 @@ export const getUserByToken = async (token) => {
 
 export const clearUserToken = async (user) => { 
   await user.update({ token: null });
+};
+
+export const changeUserAvatar = async (user, avatarURL) => {
+  await user.update({ avatarURL });
 };

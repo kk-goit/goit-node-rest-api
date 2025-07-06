@@ -20,9 +20,13 @@ const User = db_conn.define("users", {
     type: DataTypes.STRING,
     defaultValue: null,
   },
+  avatarURL: {
+    type: DataTypes.STRING,
+    defaultValue: null,
+  },
 });
 
 
-User.sync({ force: false });
+User.sync({ force: false, alter: true });
 
 export default User;

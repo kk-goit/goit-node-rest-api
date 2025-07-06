@@ -1,4 +1,5 @@
-
+import fs from "node:fs/promises";
+import path from "node:path";
 import HttpError from "../helpers/HttpError.js";
 import {
   clearUserToken,
@@ -7,7 +8,10 @@ import {
   getUserByEmail,
   getUserByToken,
   validatePassword,
- } from "../services/usersServices.js";
+  changeUserAvatar,
+} from "../services/usersServices.js";
+ 
+const avatarsDir = path.resolve("public", "avatars");
 
 export const registerUser = async (req, res) => { 
   const user = await getUserByEmail(req.body.email)
@@ -15,7 +19,11 @@ export const registerUser = async (req, res) => {
 
   const new_user = await createUser(req.body);
   res.status(201).json({
-    user: { email: new_user.email, subscription: new_user.subscription },
+    user: {
+      email: new_user.email,
+      subscription: new_user.subscription,
+      avatarURL: new_user.avatarURL,
+    },
   });
 };
 
@@ -31,7 +39,8 @@ export const loginUser = async (req, res) => {
   res.status(200).json({
     token,
     user: {
-      email: user.email, subscription: user.subscription
+      email: user.email,
+      subscription: user.subscription,
     }
   });
 };
@@ -52,5 +61,21 @@ export const logoutUser = async (req, res) => {
 };
 
 export const currentUser = async (req, res) => { 
-  res.status(200).json({ email: req.user.email, subscription: req.user.subscription });
+  res.status(200).json({
+    email: req.user.email,
+    subscription: req.user.subscription,
+    avatarURL: req.user.avatarURL,
+  });
 }
+
+export const uploadUserAvatar = async (req, res) => { 
+  let avatar = null;
+  if (req.file) {
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarsDir, filename);
+    await fs.rename(oldPath, newPath);
+    avatar = `${req.protocol}://${req.get('host')}/${path.join("avatars", filename)}`;
+  }
+  const user = await changeUserAvatar(req.user, avatar);
+  res.status(200).json({ avatarURL: req.user.avatarURL });
+};

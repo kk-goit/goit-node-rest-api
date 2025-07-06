@@ -24,6 +24,6 @@ const Contact = db_conn.define("contacts", {
   },
 });
 
-Contact.sync({ force: false });
+Contact.sync({ force: false, alter: true });
 
 export default Contact;
