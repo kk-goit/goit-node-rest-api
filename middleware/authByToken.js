@@ -1,5 +1,5 @@
 import { authUserByToken } from '../controllers/usersControllers.js';
-import HttpError from './HttpError.js';
+import HttpError from '../helpers/HttpError.js';
 
 const authByToken = async (req, _, next) => { 
   const  authHeader = req.headers.authorization;

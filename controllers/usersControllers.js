@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import HttpError from "../helpers/HttpError.js";
+import getBaseURL from "../helpers/baseURL.js";
 import {
   clearUserToken,
   createUser,
@@ -9,6 +10,8 @@ import {
   getUserByToken,
   validatePassword,
   changeUserAvatar,
+  sendVerificationEmail,
+  verifyUserByEmail,
 } from "../services/usersServices.js";
  
 const avatarsDir = path.resolve("public", "avatars");
@@ -17,7 +20,7 @@ export const registerUser = async (req, res) => {
   const user = await getUserByEmail(req.body.email)
   if (user) throw HttpError(409, "Email in use");
 
-  const new_user = await createUser(req.body);
+  const new_user = await createUser({ ...req.body, baseURL: getBaseURL(req)});
   res.status(201).json({
     user: {
       email: new_user.email,
@@ -31,7 +34,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await getUserByEmail(email);
-  if (!user || !await validatePassword(password, user.password))
+  if (!user || !user.verify || !await validatePassword(password, user.password))
     throw HttpError(401, 'Email or password is wrong');
 
   const token = await generateToken(user);
@@ -74,8 +77,28 @@ export const uploadUserAvatar = async (req, res) => {
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarsDir, filename);
     await fs.rename(oldPath, newPath);
-    avatar = `${req.protocol}://${req.get('host')}/${path.join("avatars", filename)}`;
+    avatar = `${getBaseURL(req)}${path.join("avatars", filename)}`;
   }
   const user = await changeUserAvatar(req.user, avatar);
   res.status(200).json({ avatarURL: req.user.avatarURL });
+};
+
+export const resendVerifyEmail = async (req, res) => { 
+  const { email } = req.body;
+  const user = await getUserByEmail(email);
+
+  if (!user) throw HttpError(404, 'User not found');
+  if (user.verify) throw HttpError(400, 'Verification has already been passed')
+  
+  await sendVerificationEmail(user, getBaseURL(req));
+
+  res.status(200).json({ message: "Verification email sent" });
+};
+
+export const verifyUserEmail = async (req, res) => { 
+  const { verificationToken } = req.params;
+  if (!await verifyUserByEmail(verificationToken))
+    throw HttpError(404, 'User not found');
+
+  res.status(200).json({ message: "Verification successful" });
 };

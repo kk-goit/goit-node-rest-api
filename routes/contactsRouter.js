@@ -6,10 +6,10 @@ import {
   createContact,
   updateContact,
 } from "../controllers/contactsControllers.js";
-import validateParams from "../helpers/validateParams.js";
-import validateBody from "../helpers/validateBody.js";
+import validateParams from "../middleware/validateParams.js";
+import validateBody from "../middleware/validateBody.js";
 import errorCatcher from "../helpers/errorCatcher.js";
-import authByToken from "../helpers/authByToken.js";
+import authByToken from "../middleware/authByToken.js";
 import {
   createContactSchema,
   updateContactSchema,

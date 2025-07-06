@@ -24,6 +24,13 @@ const User = db_conn.define("users", {
     type: DataTypes.STRING,
     defaultValue: null,
   },
+  verify: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  verificationToken: {
+    type: DataTypes.STRING,
+  },
 });
 
 
