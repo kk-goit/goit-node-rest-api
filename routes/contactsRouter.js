@@ -9,6 +9,7 @@ import {
 import validateParams from "../helpers/validateParams.js";
 import validateBody from "../helpers/validateBody.js";
 import errorCatcher from "../helpers/errorCatcher.js";
+import authByToken from "../helpers/authByToken.js";
 import {
   createContactSchema,
   updateContactSchema,
@@ -18,16 +19,16 @@ import {
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", errorCatcher(getAllContacts));
+contactsRouter.get("/", errorCatcher(authByToken), errorCatcher(getAllContacts));
 
-contactsRouter.get("/:id", validateParams(contactIdParamSchema), errorCatcher(getOneContact));
+contactsRouter.get("/:id", errorCatcher(authByToken), validateParams(contactIdParamSchema), errorCatcher(getOneContact));
 
-contactsRouter.delete("/:id", validateParams(contactIdParamSchema), errorCatcher(deleteContact));
+contactsRouter.delete("/:id", errorCatcher(authByToken), validateParams(contactIdParamSchema), errorCatcher(deleteContact));
 
-contactsRouter.post("/", validateBody(createContactSchema), errorCatcher(createContact));
+contactsRouter.post("/", errorCatcher(authByToken), validateBody(createContactSchema), errorCatcher(createContact));
 
-contactsRouter.put("/:id", validateParams(contactIdParamSchema), validateBody(updateContactSchema), errorCatcher(updateContact));
+contactsRouter.put("/:id", errorCatcher(authByToken), validateParams(contactIdParamSchema), validateBody(updateContactSchema), errorCatcher(updateContact));
 
-contactsRouter.patch("/:id/favorite", validateParams(contactIdParamSchema), validateBody(updateStatusContactSchema), errorCatcher(updateContact));
+contactsRouter.patch("/:id/favorite", errorCatcher(authByToken), validateParams(contactIdParamSchema), validateBody(updateStatusContactSchema), errorCatcher(updateContact));
 
 export default contactsRouter;

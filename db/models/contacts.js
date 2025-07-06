@@ -1,4 +1,4 @@
-import db_conn from "./connection.js";
+import db_conn from "../connection.js";
 import { DataTypes } from "sequelize";
 
 const Contact = db_conn.define("contacts", {
@@ -18,8 +18,12 @@ const Contact = db_conn.define("contacts", {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  owner: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
-Contact.sync();
+Contact.sync({ force: false });
 
 export default Contact;

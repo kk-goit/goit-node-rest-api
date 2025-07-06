@@ -1,11 +1,11 @@
-import Contact from "../db/contacts.js";
+import Contact from "../db/models/contacts.js";
 
-const listContacts = async () => Contact.findAll();
+const listContacts = async (userId) => Contact.findAll({where: { owner: userId }});
 
-const getContactById = async (contactId) => Contact.findByPk(contactId);
+const getContactById = async (userId, contactId) => Contact.findOne({ where: { id: contactId, owner: userId }});
 
-async function removeContact(contactId) { 
-  const contact = await getContactById(contactId);
+async function removeContact(userId, contactId) { 
+  const contact = await getContactById(userId, contactId);
   if (!contact) return null;
 
   Contact.destroy({ where: { id: contactId } });
@@ -14,8 +14,8 @@ async function removeContact(contactId) {
 
 const addContact = async (data) => Contact.create(data);
 
-async function updateContactById(contactId, newData) {
-  const contact = await getContactById(contactId);
+async function updateContactById(userId, contactId, newData) {
+  const contact = await getContactById(userId, contactId);
   if (!contact) return null;
 
   return contact.update(newData, { returning: true });

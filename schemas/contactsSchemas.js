@@ -20,7 +20,7 @@ export const createContactSchema = Joi.object({
 
 export const updateContactSchema = Joi.object({
     name: Joi.string().min(1).messages({
-        "string.empty": "Name cannot be empty",
+        "string.empty": "Name can't be empty",
     }),
     email: Joi.string().email().messages({
         "string.email": "Email must be a valid email",
